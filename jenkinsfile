@@ -52,27 +52,14 @@ pipeline {
         stage('Instalación Elasticsearch y Kibana') {
             steps {
                 sh """
-                    ssh -o StrictHostKeyChecking=no -i ${env.PEM_PATH} ubuntu@${env.INSTANCE_IP} << 'EOF'
-                    # Actualizar paquetes
-                    sudo apt-get update -y
-                    sudo apt-get upgrade -y
-                    
-                    # Instalar dependencias
-                    sudo apt-get install -y wget apt-transport-https openjdk-11-jdk
-
-                    # Agregar repositorio de Elasticsearch
-                    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
-                    sudo sh -c 'echo "deb https://artifacts.elastic.co/packages/8.x/apt stable main" > /etc/apt/sources.list.d/elastic-8.x.list'
-                    
-                    sudo apt-get update -y
-                    sudo apt-get install -y elasticsearch kibana
-
-                    # Habilitar y arrancar los servicios
-                    sudo systemctl enable elasticsearch
-                    sudo systemctl start elasticsearch
-                    sudo systemctl enable kibana
-                    sudo systemctl start kibana
-                    EOF
+                    ssh -o StrictHostKeyChecking=no -i ${env.PEM_PATH} ubuntu@${env.INSTANCE_IP} \
+                    'sudo apt-get update -y && sudo apt-get upgrade -y && \
+                    sudo apt-get install -y wget apt-transport-https openjdk-11-jdk && \
+                    wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add - && \
+                    sudo sh -c "echo \\"deb https://artifacts.elastic.co/packages/8.x/apt stable main\\" > /etc/apt/sources.list.d/elastic-8.x.list" && \
+                    sudo apt-get update -y && sudo apt-get install -y elasticsearch kibana && \
+                    sudo systemctl enable elasticsearch && sudo systemctl start elasticsearch && \
+                    sudo systemctl enable kibana && sudo systemctl start kibana'
                 """
             }
         }
